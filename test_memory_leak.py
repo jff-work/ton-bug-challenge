@@ -60,7 +60,17 @@ async def main():
     NUM_VALIDATORS = 2
     TARGET_SEQNO = 200  # Enough blocks to observe growth pattern
 
+    simplex_config = SimplexConsensusConfig(
+        target_block_rate_ms=500,
+        slots_per_leader_window=4,
+        first_block_timeout_ms=1000,
+        max_leader_window_desync=2,
+    )
+
     async with Network(install, working_dir) as network:
+        network.config.mc_consensus = simplex_config
+        network.config.shard_consensus = simplex_config
+
         dht = network.create_dht_node()
         nodes: list[FullNode] = []
         for _ in range(NUM_VALIDATORS):
